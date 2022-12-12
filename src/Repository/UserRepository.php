@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -36,6 +37,26 @@ class UserRepository extends ServiceEntityRepository
 
         if ($flush) {
             $this->getEntityManager()->flush();
+        }
+    }
+
+    /**
+     * @throws Exception
+     *
+     */
+    public function saveManyWithTransaction(array $entities): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->beginTransaction();
+        try {
+            foreach ($entities as $entity) {
+                $entityManager->persist($entity);
+            }
+            $entityManager->flush();
+            $entityManager->commit();
+        } catch (Exception $e) {
+            $entityManager->rollback();
+            throw $e;
         }
     }
 
