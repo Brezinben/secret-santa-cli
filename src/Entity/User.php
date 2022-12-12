@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -14,11 +15,26 @@ class User
     #[ORM\Column]
     private ?int $id = null;
 
-
+    #[Assert\NotBlank]
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Email must be at least {{ limit }} characters long for {{ value }}',
+        maxMessage: 'Email cannot be longer than {{ limit }} characters fro {{ value }}',
+    )]
     #[ORM\Column(length: 255, unique: true, nullable: false)]
     private string $email;
 
-
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Name must be at least {{ limit }} characters long for {{ value }}',
+        maxMessage: 'Name cannot be longer than {{ limit }} characters for {{ value }}',
+    )]
     #[ORM\Column(length: 255, nullable: false)]
     private string $name;
 
